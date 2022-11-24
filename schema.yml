@@ -1,0 +1,94 @@
+openapi: '3.0.0'
+info:
+  version: '1.0.0'
+  title: 'Users API'
+  description: Users Directory
+
+servers:
+  - url: http://localhost:4567/api/v1
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    User:
+      type: object
+      required: 
+        - id
+        - name
+        - email
+      properties: 
+        id: 
+          type: integer
+        name:
+          type: string
+        email: 
+          type: string
+    Error:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content: 
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+paths: 
+  /users:
+    get:
+      description: Returns a list of users
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/User'
+              example:
+                - id: 1
+                  name: John Doe
+                  email: john@example.com
+                - id: 2
+                  name: Jason Bourne
+                  email: jason@example.com
+                
+
+    post:
+      description: Create a user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - name
+                - email
+              properties:
+                name: 
+                  type: string
+                email: 
+                  type: string
+      responses:
+        '200': 
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          $ref: "#/components/responses/Unauthorized"
+    
